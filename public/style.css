@@ -1,0 +1,158 @@
+input[type=checkbox]:checked + label.strikethrough{
+  text-decoration: line-through;
+}
+html {
+  background-color: rgb(230, 255, 255);
+  font: 15px arial, sans-serif;
+}
+h1, h2{
+  text-shadow: 3px 3px 4px rgba(150, 150, 150, 1);
+}
+@keyframes fadeout {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+#timeholder{
+  pointer-events: none;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#topbarwrapper{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: rgb(170, 0, 190);
+  -webkit-box-shadow: 0px 0px 25px 0px rgba(171,0,190,1);
+  -moz-box-shadow: 0px 0px 25px 0px rgba(171,0,190,1);
+  box-shadow: 0px 0px 25px 0px rgba(171,0,190,1);
+}
+#topbarwrapper button{
+  cursor: pointer;
+  height: 70px;
+  display: inline;
+  float: right;
+  width: 100px;
+  background-color: rgb(50, 0, 200);
+  color: white;
+  font-size: 17px;
+  transition-duration: 1s;
+  border: none;
+}
+#topbarwrapper button:hover{
+  background-color: rgb(0, 100, 255);
+  font-size: 15px;
+}
+#topbarwrapper p{
+  margin: 5px;
+  transform: translateY(50%);
+  display: inline;
+  float: left;
+  color: white;
+  font-size: 25px;
+}
+.body{
+  text-align: center;
+  padding-top: 80px;
+}
+#loginbody{
+  text-align: center;
+  padding-top: 80px;
+  transform: translateY(20%);
+  font-size: 30px;
+}
+#loginbody p{
+  text-shadow: 3px 3px 4px rgba(150, 150, 150, 1);
+}
+#loginbody input[type=text], #loginbody input[type=password]{
+  text-align: center;
+  font-size: 30px;
+  border-radius: 100px;
+  border: outset;
+}
+#loginbody button{
+  text-align: center;
+  font-size: 30px;
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  border: 5px outset;
+  background-color: rgb(190, 190, 190);
+  transition: all 0.5s;
+}
+#loginbody button:hover{
+  transform: scale(1.1);
+  background-color: rgb(150, 150, 150);
+  border: 5px inset;
+}
+#loginbody button:active{
+  transform: scale(0.9);
+}
+#indexbody h2{
+  font-size: 40px;
+}
+#pregame{
+  text-align: center;
+  width: 100%;
+}
+#pregame button{
+  width: 30%;
+  height: 100px;
+  font-size: 30px;
+}
+#pregame p{
+  font-size: 20px;
+}
+#pregame form{
+  display: inline;
+}
+.playerstats span{
+  padding: 15px;
+}
+#mysterywordbody input{
+  font-size: 40px;
+  text-align: center;
+  width: 45px;
+  height: 45px;
+  outline-color: rgb(171,0,190);
+  background-color: rgb(230, 255, 255);
+  border-radius: 10px 10px 10px 10px;
+  -moz-border-radius: 10px 10px 10px 10px;
+  -webkit-border-radius: 10px 10px 10px 10px;
+  border: 3px ridge #d123d1;
+}
+#mysterywordbody button{
+  display: block;
+  margin: auto;
+  margin-bottom: 15px;
+  height: 50px;
+  font-size: 40px;
+  width: 150px;
+  background-color: rgb(240, 220, 255);
+  border: 0;
+  -webkit-box-shadow: 0px 0px 0px 10px rgba(240,220,255,1);
+  -moz-box-shadow: 0px 0px 0px 10px rgba(240,220,255,1);
+  box-shadow: 0px 0px 0px 10px rgba(240,220,255,1);
+  transition: all 0.5s;
+}
+#mysterywordbody button:hover{
+  -webkit-box-shadow: 0px 0px 17px 10px rgba(240,220,255,1);
+  -moz-box-shadow: 0px 0px 17px 10px rgba(240,220,255,1);
+  box-shadow: 0px 0px 17px 10px rgba(240,220,255,1);
+}
+#letterstatus{
+  animation: fadeout 7s ease-in 1;
+  opacity: 0;
+}
+#mysterywordbody h2{
+  font-size: 70px;
+}
+#mysterywordbody p{
+  font-size: 30px;
+}
+#mysteryword{
+  text-transform: uppercase;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+ <html>
+ 	<head>
+ 		<meta charset="utf-8">
+ 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+ 		<title>Login</title>
+ 		<meta name="description" content=" " />
+ 		<meta name="author" content=" " />
+ 		<meta name="HandheldFriendly" content="true" />
+ 		<meta name="MobileOptimized" content="320" />
+ 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+ 	</head>
+ 	<body>
+    <div id="topbarwrapper">
+      <form action="/statisticsredirect" method="post"><button type="submit">Statistics</button></form>
+      <form action="/loginredirect" method="post"><button type="submit">Login</button></form>
+      <form action="/signupredirect" method="post"><button type="submit">Sign Up</button></form>
+    </div>
+    <div class="body" id="loginbody">
+      <form action="/login" method="post">
+        <p>Login Username:</p>
+        <input type="text" name="username"required/>
+        <p>Login Password:</p>
+        <input type="password" name="password"required/>
+        <p class="error">{{status}}</p>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+ 	  <script type="text/javascript" src="main.js"></script>
+ 	</body>
+ </html>

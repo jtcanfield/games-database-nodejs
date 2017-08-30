@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+ <html>
+ 	<head>
+ 		<meta charset="utf-8">
+ 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+ 		<title>Games</title>
+ 		<meta name="description" content=" " />
+ 		<meta name="author" content=" " />
+ 		<meta name="HandheldFriendly" content="true" />
+ 		<meta name="MobileOptimized" content="320" />
+ 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+ 	</head>
+ 	<body>
+    <div id="topbarwrapper">
+      <form action="/statisticsredirect" method="post"><button type="submit">Statistics</button></form>
+      <p>Welcome, {{username}}</p>
+      <form action="/" method="post"><button type="submit">Play!</button></form>
+      <form action="/logout" method="post"><button type="submit">Logout</button></form>
+    </div>
+    <div class="body" id="mysterywordbody">
+      {{#game}}
+      <h2 id="mysteryword">{{#emptyWord}} {{.}} {{/emptyWord}}</h2>
+      <p>Letters Guessed so far:{{#guessed}} {{.}},{{/guessed}}</p>
+      <p>Guesses Left:{{lives}}</p>
+      <form action="/submitletter" method="post">
+        <button type="submit">Guess!</button>
+        <input type="text" name="lettersubmitted" maxlength="1" style="text-transform:uppercase" required autofocus autocomplete="off">
+        <div id="timeholder"><input id="timekeeper" name="timer" value="{{time}}"></div>
+      </form>
+      <p id="letterstatus">{{#letterstatus}}{{letterstatus}}{{/letterstatus}}</p>
+      {{/game}}
+      {{#gamefinal}}
+      <h2 id="mysteryword">{{#emptyWord}} {{.}} {{/emptyWord}}</h2>
+      <p>Letters Guessed so far:{{#guessed}} {{.}},{{/guessed}}</p>
+      <p>{{lives}}</p>
+      <p>{{letterstatus}}</p>
+      <form action="/" method="post"><button type="submit">Play Again!</button></form>
+      {{/gamefinal}}
+    </div>
+ 	  <script type="text/javascript" src="main.js"></script>
+ 	</body>
+ </html>

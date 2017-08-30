@@ -7,7 +7,8 @@ const userFile = require('./users.js');
 const statsFile = require('./stats.js');
 const session = require('express-session');
 const fs = require('fs');
-const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
+const wordFile = fs.readFileSync("wordsEN.txt", "utf-8").toLowerCase().split("\n");
+// const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 
 
 const mongodb = require('mongodb');
@@ -148,7 +149,6 @@ app.post("/submitletter", function (req, res) {
         });
         statsFile.changestats(req.sessionStore.authedUser, 0, 1, req.sessionStore.word, req.sessionStore.word.length, req.body.timer, "Loss");
         res.render("mysteryword", {gamefinal:true,username:req.sessionStore.authedUser,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: "Out of lives!", time:req.body.timer, letterstatus:"Wrong!"});
-        clearInterval(x);
         req.sessionStore.emptyWord = undefined;
         return
       } else {
@@ -171,7 +171,6 @@ app.post("/submitletter", function (req, res) {
       if (gameWin === true){//GAME WIN
         statsFile.changestats(req.sessionStore.authedUser, 1, 0, req.sessionStore.word, req.sessionStore.word.length, req.body.timer, "Win");
         res.render("mysteryword", {gamefinal:true,username:req.sessionStore.authedUser,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: req.sessionStore.lives, time:req.body.timer, letterstatus:"Good Game!"});
-        clearInterval(x);
         req.sessionStore.emptyWord = undefined;
         return
       } else {

@@ -12,11 +12,11 @@ const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase()
 
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
-const mongoURL = 'mongodb://localhost:27017/videoGameCollectionTest';
+const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
-mongoose.connect('mongodb://localhost:27017/videoGameCollectionTest');
-const Game = require("./models/model");
+mongoose.connect('mongodb://localhost:27017/gamesdatabasenodejs');
+const UserModel = require("./models/model");
 
 
 app.use(session({ secret: 'this-is-a-secret-token', cookie: { maxAge: 60000, httpOnly: false}}));
@@ -238,3 +238,7 @@ app.get("/:dynamic", function (req, res) {
 app.listen(3000, function () {
   console.log('Hosted on local:3000');
 })
+MongoClient.connect(mongoURL, function(err, db) {
+  console.log("Connected successfully to server at " + mongoURL);
+  db.close();
+});

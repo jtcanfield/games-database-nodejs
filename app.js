@@ -8,6 +8,17 @@ const statsFile = require('./stats.js');
 const session = require('express-session');
 const fs = require('fs');
 const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
+
+
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
+const mongoURL = 'mongodb://localhost:27017/videoGameCollectionTest';
+const mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
+mongoose.connect('mongodb://localhost:27017/videoGameCollectionTest');
+const Game = require("./models/model");
+
+
 app.use(session({ secret: 'this-is-a-secret-token', cookie: { maxAge: 60000, httpOnly: false}}));
 app.engine('mustache', mustache());
 app.set('view engine', 'mustache');

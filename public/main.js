@@ -23,12 +23,13 @@ if (timekeeper){
   function timerBeginCount(){
     var timeTaken = Number(timekeeper.value);
     x = setInterval(function() {
-      timeTaken += 1000;
+      timeTaken += 10;
       document.getElementById('timekeeper').value = timeTaken;
       var mins = Math.floor((timeTaken % (1000 * 60 * 60)) / (1000 * 60));
       var secs = Math.floor((timeTaken % (1000 * 60)) / 1000);
       finalTime = mins + "m " + secs + "s ";
-    }, 1000);
+      console.log(finalTime);
+    }, 10);
   };
   timerBeginCount();
 }

@@ -7,8 +7,6 @@ const userFile = require('./users.js');
 const statsFile = require('./stats.js');
 const session = require('express-session');
 const fs = require('fs');
-const wordFile = fs.readFileSync("wordsEN.txt", "utf-8").toLowerCase().split("\n");
-// const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
@@ -33,7 +31,8 @@ function isLetter(c) {
   return c.toLowerCase() != c.toUpperCase();
 };
 
-
+const wordFile = fs.readFileSync("wordsen.txt", "utf-8").toLowerCase().split("\n");
+// const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 //BEGIN GETS
 app.get("/", function (req, res) {
   if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}

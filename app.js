@@ -10,7 +10,6 @@ const fs = require('fs');
 const wordFile = fs.readFileSync("wordsEN.txt", "utf-8").toLowerCase().split("\n");
 // const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 
-
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';

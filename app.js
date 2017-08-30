@@ -223,9 +223,12 @@ app.get("/:dynamic", function (req, res) {
   console.log(req.params.dynamic);
   res.redirect('/');
 });
-
-app.listen(3000, function () {
-  console.log('Hosted on local:3000');
+process.env.PORT || 5000
+// app.listen(3000, function () {
+//   console.log('Hosted on local:3000');
+// })
+app.listen(process.env.PORT || 5000, function () {
+  console.log('Hosted on local:5000 or Dynamic');
 })
 MongoClient.connect(mongoURL, function(err, db) {
   console.log("Connected successfully to server at " + mongoURL);

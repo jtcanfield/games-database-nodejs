@@ -31,8 +31,24 @@ function isLetter(c) {
   return c.toLowerCase() != c.toUpperCase();
 };
 
-const wordFile = fs.readFileSync("wordsen.txt", "utf-8").toLowerCase().split("\n");
 // const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
+// const wordFiletxt = fs.readFileSync("wordsen.txt", "utf-8").toLowerCase().split("\n");
+const wordFile = fs.readFileSync("words.json", "utf-8").toLowerCase().split("\n");
+var wordtest = function (callback){
+  fs.readFile("words.json", 'utf8', function(err, data){
+    if (err){
+        console.log(err);
+    } else {
+      obj = JSON.parse(data);
+      callback(obj);
+    }
+  });
+}
+wordtest(function(x){
+  console.log(typeof x);
+});
+
+
 //BEGIN GETS
 app.get("/", function (req, res) {
   if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}

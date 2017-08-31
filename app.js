@@ -8,7 +8,6 @@ const statsFile = require('./stats.js');
 const mysterywordgameFile = require('./mysterywordgame.js');
 const session = require('express-session');
 const fs = require('fs');
-
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';
@@ -31,48 +30,6 @@ var gameLoss = false;
 function isLetter(c) {
   return c.toLowerCase() != c.toUpperCase();
 };
-
-// const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
-// function writedatfile(){
-//   json = JSON.stringify(wordFile);
-//   fs.writeFile('words.json', json, 'utf8');
-// }
-// writedatfile()
-// const wordFile = fs.readFileSync("wordsen.txt", "utf-8").toLowerCase().split("\n");
-// const wordFile = fs.readFileSync("words.json", "utf-8").toLowerCase();
-// fs.readFile('words.json', 'utf8', function readFileCallback(err, data){
-//   if (err){
-//       console.log(err);
-//   } else {
-//     obj = JSON.parse(data);
-//     obj.words.map((x) =>{
-//       if (x.length >= 4 && x.length <= 6){
-//         console.log(x.length)
-//         // arrayOfPossibleWords.push(x);
-//       }
-//     });
-//   }
-// });
-
-
-
-
-
-// var wordtest = function (callback){
-//   fs.readFile("words.json", 'utf8', function(err, data){
-//     if (err){
-//         console.log(err);
-//     } else {
-//       obj = JSON.parse(data);
-//       callback(obj);
-//     }
-//   });
-// }
-// console.log(wordFile);
-// wordtest(function(x){
-//   console.log(typeof x);
-// });
-
 
 //BEGIN GETS
 app.get("/", function (req, res) {
@@ -137,35 +94,6 @@ app.post("/startgame:dynamic", function (req, res) {
     // res.redirect("/mysteryword" + encodedstring);
     res.render("mysteryword", {game:true,username:req.sessionStore.authedUser,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: req.sessionStore.lives, time:"0", letterstatus:"Go!"});
   });
-  // var arrayOfPossibleWords = [];
-  // switch (req.params.dynamic) {
-  //   case "easy":
-  //     wordFile.map((x) =>{
-  //       if (x.length >= 4 && x.length <= 6){
-  //         console.log(x)
-  //         arrayOfPossibleWords.push(x);
-  //       }
-  //     });
-  //     break;
-  //   case "medium":
-  //     wordFile.map((x) =>{
-  //       if (x.length >= 6 && x.length <= 8){
-  //         arrayOfPossibleWords.push(x);
-  //       }
-  //     });
-  //     break;
-  //   case "hard":
-  //     wordFile.map((x) =>{
-  //       if (x.length > 8){
-  //         arrayOfPossibleWords.push(x);
-  //       }
-  //     });
-  //     break;
-  //   default:
-  // }
-  // var wordindex = Math.floor(Math.random() * arrayOfPossibleWords.length);
-  //SPREAD OPERATOR:
-  // req.sessionStore.word = [...arrayOfPossibleWords[wordindex]];
 });
 
 app.post("/submitletter", function (req, res) {

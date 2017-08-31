@@ -275,5 +275,5 @@ app.listen(process.env.PORT || 5000, function () {
 })
 MongoClient.connect(mongoURL, function(err, db) {
   console.log("Connected successfully to server at " + mongoURL);
-  db.close();
+  // db.close();
 });

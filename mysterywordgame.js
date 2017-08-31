@@ -14,7 +14,6 @@ var getword = function (difficulty, callback){
         case "easy":
           obj.words.map((x) =>{
             if (x.length >= 4 && x.length <= 6){
-              console.log(x)
               arrayOfPossibleWords.push(x);
             }
           });

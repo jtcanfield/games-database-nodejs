@@ -32,7 +32,7 @@ function isLetter(c) {
   return c.toLowerCase() != c.toUpperCase();
 };
 
-const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
+// const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 // function writedatfile(){
 //   json = JSON.stringify(wordFile);
 //   fs.writeFile('words.json', json, 'utf8');
@@ -40,19 +40,19 @@ const wordFile = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase()
 // writedatfile()
 // const wordFile = fs.readFileSync("wordsen.txt", "utf-8").toLowerCase().split("\n");
 // const wordFile = fs.readFileSync("words.json", "utf-8").toLowerCase();
-fs.readFile('words.json', 'utf8', function readFileCallback(err, data){
-  if (err){
-      console.log(err);
-  } else {
-    obj = JSON.parse(data);
-    obj.words.map((x) =>{
-      if (x.length >= 4 && x.length <= 6){
-        console.log(x.length)
-        // arrayOfPossibleWords.push(x);
-      }
-    });
-  }
-});
+// fs.readFile('words.json', 'utf8', function readFileCallback(err, data){
+//   if (err){
+//       console.log(err);
+//   } else {
+//     obj = JSON.parse(data);
+//     obj.words.map((x) =>{
+//       if (x.length >= 4 && x.length <= 6){
+//         console.log(x.length)
+//         // arrayOfPossibleWords.push(x);
+//       }
+//     });
+//   }
+// });
 
 
 

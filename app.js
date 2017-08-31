@@ -8,13 +8,13 @@ const statsFile = require('./stats.js');
 const mysterywordgameFile = require('./mysterywordgame.js');
 const session = require('express-session');
 const fs = require('fs');
-const mongodb = require('mongodb');
-const MongoClient = mongodb.MongoClient;
-const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';
-const mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
-mongoose.connect('mongodb://localhost:27017/gamesdatabasenodejs');
-const UserModel = require("./models/model");
+// const mongodb = require('mongodb');
+// const MongoClient = mongodb.MongoClient;
+// const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';
+// const mongoose = require('mongoose');
+// mongoose.Promise = require('bluebird');
+// mongoose.connect('mongodb://localhost:27017/gamesdatabasenodejs');
+// const UserModel = require("./models/model");
 
 
 app.use(session({ secret: 'this-is-a-secret-token', cookie: { maxAge: 60000, httpOnly: false}}));
@@ -201,7 +201,7 @@ process.env.PORT || 5000
 app.listen(process.env.PORT || 5000, function () {
   console.log('Hosted on local:5000 or Dynamic');
 })
-MongoClient.connect(mongoURL, function(err, db) {
-  console.log("Connected successfully to server at " + mongoURL);
-  // db.close();
-});
+// MongoClient.connect(mongoURL, function(err, db) {
+//   console.log("Connected successfully to server at " + mongoURL);
+//   // db.close();
+// });

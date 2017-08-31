@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const userFile = require('./users.js');
 const statsFile = require('./stats.js');
+const mysterywordgameFile = require('./mysterywordgame.js');
 const session = require('express-session');
 const fs = require('fs');
 
@@ -124,44 +125,47 @@ app.post("/login", function (req, res) {
 
 app.post("/startgame:dynamic", function (req, res) {
   if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}
-  var arrayOfPossibleWords = [];
-  switch (req.params.dynamic) {
-    case "easy":
-      wordFile.map((x) =>{
-        if (x.length >= 4 && x.length <= 6){
-          console.log(x)
-          arrayOfPossibleWords.push(x);
-        }
-      });
-      break;
-    case "medium":
-      wordFile.map((x) =>{
-        if (x.length >= 6 && x.length <= 8){
-          arrayOfPossibleWords.push(x);
-        }
-      });
-      break;
-    case "hard":
-      wordFile.map((x) =>{
-        if (x.length > 8){
-          arrayOfPossibleWords.push(x);
-        }
-      });
-      break;
-    default:
-  }
-  var wordindex = Math.floor(Math.random() * arrayOfPossibleWords.length);
+  mysterywordgameFile.getword(req.params.dynamic, function(word){
+    req.sessionStore.word = [...word];
+    var emptyArray = [];
+    req.sessionStore.word.map((x) =>{emptyArray.push("_")});
+    req.sessionStore.emptyWord = emptyArray;
+    req.sessionStore.guessed = [];
+    req.sessionStore.lives = 8;
+    // var encodedstring = encodeURIComponent('{game:"active",emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: req.sessionStore.lives, time:"0", letterstatus:"Go!"}');
+    // console.log(decodeURIComponent(encodedstring));
+    // res.redirect("/mysteryword" + encodedstring);
+    res.render("mysteryword", {game:true,username:req.sessionStore.authedUser,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: req.sessionStore.lives, time:"0", letterstatus:"Go!"});
+  });
+  // var arrayOfPossibleWords = [];
+  // switch (req.params.dynamic) {
+  //   case "easy":
+  //     wordFile.map((x) =>{
+  //       if (x.length >= 4 && x.length <= 6){
+  //         console.log(x)
+  //         arrayOfPossibleWords.push(x);
+  //       }
+  //     });
+  //     break;
+  //   case "medium":
+  //     wordFile.map((x) =>{
+  //       if (x.length >= 6 && x.length <= 8){
+  //         arrayOfPossibleWords.push(x);
+  //       }
+  //     });
+  //     break;
+  //   case "hard":
+  //     wordFile.map((x) =>{
+  //       if (x.length > 8){
+  //         arrayOfPossibleWords.push(x);
+  //       }
+  //     });
+  //     break;
+  //   default:
+  // }
+  // var wordindex = Math.floor(Math.random() * arrayOfPossibleWords.length);
   //SPREAD OPERATOR:
-  req.sessionStore.word = [...arrayOfPossibleWords[wordindex]];
-  var emptyArray = [];
-  req.sessionStore.word.map((x) =>{emptyArray.push("_")});
-  req.sessionStore.emptyWord = emptyArray;
-  req.sessionStore.guessed = [];
-  req.sessionStore.lives = 8;
-  // var encodedstring = encodeURIComponent('{game:"active",emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: req.sessionStore.lives, time:"0", letterstatus:"Go!"}');
-  // console.log(decodeURIComponent(encodedstring));
-  // res.redirect("/mysteryword" + encodedstring);
-  res.render("mysteryword", {game:true,username:req.sessionStore.authedUser,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: req.sessionStore.lives, time:"0", letterstatus:"Go!"});
+  // req.sessionStore.word = [...arrayOfPossibleWords[wordindex]];
 });
 
 app.post("/submitletter", function (req, res) {

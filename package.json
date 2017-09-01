@@ -22,14 +22,18 @@
   },
   "homepage": "https://github.com/jtcanfield/todolist-nodejs#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
+    "express-validator": "^4.1.0",
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.9",
     "mustache-express": "^1.2.5",
-    "passport": "^0.4.0"
+    "mysql": "^2.14.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {}
 }

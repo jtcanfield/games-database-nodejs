@@ -76,9 +76,22 @@ var pullStats = function (callback){
   });
 }
 
+var pullStatsAPI = function (callback){
+  fs.readFile('stats.json', 'utf8', function readFileCallback(err, data){
+    if (err){
+        console.log(err);
+    } else {
+      obj = JSON.parse(data);
+      callback(obj.users);
+      // callback(JSON.stringify(obj.users));
+    }
+  });
+}
+
 module.exports = {
   getspecificstats:getspecificstats,
   changestats: changestats,
   addstatuser: addstatuser,
-  pullStats:pullStats
+  pullStats:pullStats,
+  pullStatsAPI:pullStatsAPI
 }

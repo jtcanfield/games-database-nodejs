@@ -1,20 +1,31 @@
-const express = require('express');
-const path = require('path');
-const mustache = require('mustache-express');
-const bodyParser = require('body-parser');
-const app = express();
-const userFile = require('./users.js');
-const statsFile = require('./stats.js');
-const mysterywordgameFile = require('./mysterywordgame.js');
-const session = require('express-session');
-const fs = require('fs');
+// const fs = require('fs');
+// const path = require('path');
+// const express = require('express');
+// const mustache = require('mustache-express');
+// const bodyParser = require('body-parser');
+// const session = require('express-session');
+const fs = require('fs'),
+    path = require('path'),
+    express = require('express'),
+    mustache = require('mustache-express'),
+    bodyParser = require('body-parser'),
+    session = require('express-session'),
+    passport = require('passport'),
+    // LocalStrategy = require('passport-local').Strategy,
+    expressValidator = require('express-validator');
 // const mongodb = require('mongodb');
 // const MongoClient = mongodb.MongoClient;
 // const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';
 // const mongoose = require('mongoose');
 // mongoose.Promise = require('bluebird');
 // mongoose.connect('mongodb://localhost:27017/gamesdatabasenodejs');
-// const UserModel = require("./models/model");
+const mysql = require('mysql');
+const bcrypt = require('bcryptjs');
+const app = express();
+const userFile = require('./users.js');
+const statsFile = require('./stats.js');
+const mysterywordgameFile = require('./mysterywordgame.js');
+const UserModel = require("./models/model");
 
 
 app.use(session({ secret: 'this-is-a-secret-token', cookie: { maxAge: 60000, httpOnly: false}}));
@@ -26,7 +37,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.text());
 var gameWin = false;
-var gameLoss = false;
 function isLetter(c) {
   return c.toLowerCase() != c.toUpperCase();
 };
@@ -189,6 +199,12 @@ app.get("/profile:dynamic", function (req, res) {
     res.render("profile", {stats:x, username:req.sessionStore.authedUser});
   });
 });
+app.get("/search:dynamic", function (req, res) {
+  statsFile.pullStats(function(x){
+    res.json({stats: x});
+    // res.render("statistics", {stats:x, username:req.sessionStore.authedUser});
+  });
+});
 app.get("/:dynamic", function (req, res) {
   console.log("DYNAMIC TRIGGERED:")
   console.log(req.params.dynamic);
@@ -205,3 +221,18 @@ app.listen(process.env.PORT || 5000, function () {
 //   console.log("Connected successfully to server at " + mongoURL);
 //   // db.close();
 // });
+
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: ""
+});
+
+con.connect(function(err) {
+  if (err){
+      console.log(err);
+      return
+  }
+  // throw err;
+  console.log("Connected!");
+});

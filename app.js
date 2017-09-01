@@ -46,37 +46,22 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(function (req, res, next) {
+  res.locals.id = req.sessionID;
   res.locals.user = req.user;
   next();
 })
-app.get("/loginpassport", function (req, res) {
+app.get("/login", function (req, res) {
   req.sessionStore.authedUser = undefined;
   res.render("login", {messages: res.locals.getMessages()});
 });
-app.post('/loginpassport/', passport.authenticate('local', {
-    successRedirect: '/statistics',
-    failureRedirect: '/loginpassport',
-    failureFlash: true
-}))
-const userDataFile = require('./data.json');
-function getUser(uzer){
-  return userDataFile.users.find(function (user) {
-    return user.username.toLowerCase() == uzer.toLowerCase();
-  });
-}
 passport.use(new LocalStrategy(
     function(username, password, done) {
-      fs.readFile('data.json', 'utf8', function(err, data){
+      userFile.checkLogin(username, password, function(err, userobj, msg){
+        console.log(userobj)
         if (err){
             return done(err)
         } else {
-        obj = JSON.parse(data);
-        var userCheck = getUser(username);
-          if (userCheck !== undefined && password === userCheck.password){
-            return done(null, username);
-          } else {
-            return done(null, false, {message: "There is no user with that username and password."})
-          }
+            return done(null, userobj, {message: msg})
         }
       });
     }
@@ -87,12 +72,11 @@ passport.serializeUser(function(user, done) {
     done(null, user);
 });
 
-passport.deserializeUser(function(id, done) {
-  // console.log(id);
-  userFile.getUserCallback(id, function(err, user){
+passport.deserializeUser(function(userobj, done) {
+  userFile.getUserCallback(userobj.username, function(err, user){
       console.log("DEEEESERIALIZEUSER RAN:");
       console.log(user);
-        done(err, user);
+      done(err, user);
     });
 });
 const requiresLogin = function (req, res, next) {
@@ -135,7 +119,7 @@ app.get("/signup", function (req, res) {
   req.sessionStore.authedUser = undefined;
   res.render("signup");
 });
-app.get("/mysteryword", function (req, res) {
+app.get("/mysteryword", requiresLogin, function (req, res) {
   if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}
   res.redirect('/');
 });
@@ -150,22 +134,28 @@ app.get("/statistics", function (req, res) {
 //END GETS
 
 //BEGIN POSTS
+// app.post('/login', passport.authenticate('local', {
+//     successRedirect: '/',
+//     failureRedirect: '/login',
+//     failureFlash: true
+// }))
+app.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return res.redirect('/login'); }
+    userFile.addSession(req.body.username, req.sessionID, function(){
+      return res.redirect('/statistics');
+    });
+  })(req, res, next);
+});
+
+
+
 app.post("/", function (req, res) {
   res.redirect('/');
 });
 app.post("/mysteryword", function (req, res) {
   res.redirect('/');
-});
-
-app.post("/login", function (req, res) {
-  userFile.checkLogin(req.body.username, req.body.password, function(x){
-    if (x){
-      req.sessionStore.authedUser = req.body.username;
-      res.redirect("/");
-    } else {
-      res.render("login", {status:"Incorrect User Id or Password"});
-    }
-  });
 });
 
 

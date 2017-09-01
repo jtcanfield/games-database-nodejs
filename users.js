@@ -18,15 +18,17 @@ function getUserCallback(uzer, callback){
 var checkLogin = function (usrname, pass, callback){
   fs.readFile('data.json', 'utf8', function(err, data){
     if (err){
+        callback(err);
         console.log(err);
+        return
     } else {
     obj = JSON.parse(data);
     var userCheck = getUser(usrname);
       if (userCheck !== undefined && pass === userCheck.password){
-        callback(true);
+        callback(null, userCheck, "Success!");
         return
       } else {
-        callback(false);
+        callback(null, false, "There is no user with that username and password.");
         return
       }
     }
@@ -78,10 +80,34 @@ var addUser = function(newusername, newpassword, newemail, callback){
   callback();
 }
 
+var addSession = function(username, id, callback){
+  fs.readFile('data.json', 'utf8', function(err, data){
+    if (err){
+        console.log(err);
+    } else {
+      obj = JSON.parse(data);
+      userDataFile.users.map((x) =>{
+        if (x.username.toLowerCase() === username.toLowerCase()){
+          x.sessionID = id;
+          console.log(x);
+          console.log(x.sessionID);
+          console.log(obj);
+          return
+        }
+      });
+      console.log(obj);
+      // json = JSON.stringify(obj);
+      // fs.writeFile('data.json', json, 'utf8');
+    }
+  });
+  callback();
+}
+
 module.exports = {
   userObjectPull:getUser,
   getUserCallback:getUserCallback,
   checkLogin:checkLogin,
   checkExistingUsers:checkExistingUsers,
-  addUser:addUser
+  addUser:addUser,
+  addSession:addSession
 }

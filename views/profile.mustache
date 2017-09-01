@@ -16,15 +16,15 @@
  	<body>
     <div id="topbarwrapper">
       <form action="/statisticsredirect" method="post"><button type="submit">Statistics</button></form>
-      {{#username}}
+      {{#user}}
       <p>Welcome, {{username}}</p>
       <form action="/" method="post"><button type="submit">Play!</button></form>
       <form action="/logout" method="post"><button type="submit">Logout</button></form>
-      {{/username}}
-      {{^username}}
+      {{/user}}
+      {{^user}}
       <form action="/loginredirect" method="post"><button type="submit">Login</button></form>
       <form action="/signupredirect" method="post"><button type="submit">Sign Up</button></form>
-      {{/username}}
+      {{/user}}
     </div>
     <div class="body" id="profilebody">
       <div id="profilepageinfo">{{stats}}</div>

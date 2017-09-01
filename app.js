@@ -135,28 +135,35 @@ app.get("/mysteryword", requiresLogin, function (req, res) {
 app.get("/statistics", function (req, res) {
   MongoClient.connect(mongoURL, function (err, db) {
   const statlist = db.collection("statistics");
-  statlist.find().toArray(function (err, docs) {
+    statlist.find().toArray(function (err, docs) {
     res.render("statistics", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
-  })
+    })
   })
 });
 //END GETS
 
 //BEGIN POSTS
-app.post('/login', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true
-}))
-// app.post('/login', function(req, res, next) {
-//   passport.authenticate('local', function(err, user, info) {
-//     if (err) { return next(err); }
-//     if (!user) { return res.redirect('/login'); }
-//     userFile.addSession(req.body.username, req.sessionID, function(){
-//       return res.redirect('/statistics');
-//     });
-//   })(req, res, next);
-// });
+// app.post('/login', passport.authenticate('local', {
+//     successRedirect: '/',
+//     failureRedirect: '/login',
+//     failureFlash: true
+// }))
+app.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    console.log(user)
+    if (err) {  return res.redirect('/') }
+    if (!user) { return res.redirect('/login');  }
+    // if (user) { res.redirect('/login');return  }
+    req.sessionStore.authedUser = user.username
+    MongoClient.connect(mongoURL, function (err, db) {
+    const users = db.collection("users");
+      users.updateOne({username:{$eq: user.username}}, {$set: {sessionID:req.sessionID}}, function (err, docs) {
+        console.log(docs)
+      return res.redirect('/');
+      })
+    })
+  })(req, res, next);
+});
 
 
 
@@ -273,9 +280,12 @@ app.post("/statisticsredirect", function (req, res) {
   res.redirect('/statistics');
 });
 app.get("/profile:dynamic", function (req, res) {
-  statsFile.getspecificstats(req.params.dynamic, function(x){
-    res.render("profile", {stats:x, username:req.sessionStore.authedUser});
-  });
+  MongoClient.connect(mongoURL, function (err, db) {
+  const statlist = db.collection("statistics");
+    statlist.find({ username: { $eq: req.params.dynamic } }).toArray(function (err, docs) {
+    res.render("statistics", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
+    })
+  })
 });
 app.get("/search:dynamic", function (req, res) {
   statsFile.pullStatsAPI(function(x){

@@ -42,17 +42,16 @@ function isLetter(c) {
 
 
 
-
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.user = req.user;
+  next();
+})
 app.get("/loginpassport", function (req, res) {
   req.sessionStore.authedUser = undefined;
-  // res.render("login");
-  res.render("login", {
-        messages: res.locals.getMessages()
-    });
+  res.render("login", {messages: res.locals.getMessages()});
 });
 app.post('/loginpassport/', passport.authenticate('local', {
     successRedirect: '/statistics',
@@ -96,6 +95,14 @@ passport.deserializeUser(function(id, done) {
         done(err, user);
     });
 });
+const requiresLogin = function (req, res, next) {
+  console.log(req.user);
+  if (req.user) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+}
 
 
 
@@ -274,7 +281,6 @@ app.get("/profile:dynamic", function (req, res) {
 app.get("/search:dynamic", function (req, res) {
   statsFile.pullStatsAPI(function(x){
     res.json({stats: x});
-    // res.render("statistics", {stats:x, username:req.sessionStore.authedUser});
   });
 });
 app.get("/:dynamic", function (req, res) {
@@ -283,9 +289,6 @@ app.get("/:dynamic", function (req, res) {
   res.redirect('/');
 });
 process.env.PORT || 5000
-// app.listen(3000, function () {
-//   console.log('Hosted on local:3000');
-// })
 app.listen(process.env.PORT || 5000, function () {
   console.log('Hosted on local:5000 or Dynamic');
 })
@@ -294,17 +297,15 @@ app.listen(process.env.PORT || 5000, function () {
 //   // db.close();
 // });
 
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: ""
-});
-
-con.connect(function(err) {
-  if (err){
-      console.log(err);
-      return
-  }
-  // throw err;
-  console.log("Connected!");
-});
+// const con = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: ""
+// });
+// con.connect(function(err) {
+//   if (err){
+//       console.log(err);
+//       return
+//   }
+//   console.log("Connected!");
+// });

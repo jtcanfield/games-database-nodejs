@@ -18,7 +18,6 @@ mongoose.Promise = require('bluebird');
 mongoose.connect('mongodb://localhost:27017/gamesdatabasenodejs');
 
 
-
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const app = express();
@@ -51,7 +50,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(function (req, res, next) {
-  res.locals.user = req.user;
+  MongoClient.connect(mongoURL, function (err, db) {
+    const users = db.collection("users");
+    users.find({sessionID:{$eq: req.sessionID}}).toArray(function (err, docs) {
+      console.log("THIS IS THE CHECK:")
+      console.log(docs[0])
+    })
+  })
   next();
 })
 app.get("/login", function (req, res) {
@@ -61,6 +66,7 @@ app.get("/login", function (req, res) {
 passport.use(new LocalStrategy(
     function(username, password, done) {
       userFile.checkLogin(username, password, function(err, userobj, msg){
+        console.log("STRATEGY LAUNCHED");
         console.log(userobj)
         if (err){
             return done(err)
@@ -105,10 +111,6 @@ const requiresLogin = function (req, res, next) {
 
 
 
-
-
-
-
 //BEGIN GETS
 app.get("/", function (req, res) {
   console.log("REQ.USER FOR THE GET SLASH")
@@ -134,7 +136,7 @@ app.get("/mysteryword", requiresLogin, function (req, res) {
 
 app.get("/statistics", function (req, res) {
   MongoClient.connect(mongoURL, function (err, db) {
-  const statlist = db.collection("statistics");
+    const statlist = db.collection("statistics");
     statlist.find().toArray(function (err, docs) {
     res.render("statistics", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
     })
@@ -153,12 +155,10 @@ app.post('/login', function(req, res, next) {
     console.log(user)
     if (err) {  return res.redirect('/') }
     if (!user) { return res.redirect('/login');  }
-    // if (user) { res.redirect('/login');return  }
     req.sessionStore.authedUser = user.username
     MongoClient.connect(mongoURL, function (err, db) {
-    const users = db.collection("users");
+      const users = db.collection("users");
       users.updateOne({username:{$eq: user.username}}, {$set: {sessionID:req.sessionID}}, function (err, docs) {
-        console.log(docs)
       return res.redirect('/');
       })
     })
@@ -266,7 +266,8 @@ app.post("/signup", function (req, res) {
 });
 app.post("/logout", function (req, res) {
   req.sessionStore.authedUser = undefined;
-  res.redirect('/login');
+  req.session.destroy();
+  res.redirect('back');
 });
 app.post("/loginredirect", function (req, res) {
   req.sessionStore.authedUser = undefined;
@@ -281,7 +282,7 @@ app.post("/statisticsredirect", function (req, res) {
 });
 app.get("/profile:dynamic", function (req, res) {
   MongoClient.connect(mongoURL, function (err, db) {
-  const statlist = db.collection("statistics");
+    const statlist = db.collection("statistics");
     statlist.find({ username: { $eq: req.params.dynamic } }).toArray(function (err, docs) {
     res.render("statistics", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
     })

@@ -53,9 +53,12 @@ passport.serializeUser(function(user, done) {
     done(null, user);
 });
 passport.deserializeUser(function(userobj, done) {
-  userFile.getUserCallback(userobj.username, function(err, user){
-      done(err, user);
-    });
+  MongoClient.connect(mongoURL, function (err, db) {
+    const users = db.collection("users");
+    users.find({username:{$eq: userobj.username.toLowerCase()}}).toArray(function (err, docs) {
+    return done(err, docs)
+    })
+  })
 });
 app.use(function (req, res, next) {
   console.log("unnamed function");
@@ -232,11 +235,11 @@ app.post("/submitletter", requiresLogin, function (req, res) {
 });
 
 app.post("/signup", function (req, res) {
-  userFile.checkExistingUsers(req, function(error, errordescrip){
+  userFile.validateForm(req, function(error, errordescrip){
     if (error === true){
       res.render('signup', {status:errordescrip});
       return
-    } else if (error !== true){
+    } else {//REMOVE DUPLICATED MONGOCLIENT.CONNECT AND CONSTS
       MongoClient.connect(mongoURL, function (err, db) {
         const users = db.collection("users");
         users.find({username:{$eq: req.body.username.toLowerCase()}}).toArray(function (err, docs) {
@@ -275,6 +278,7 @@ app.get("/profile:dynamic", function (req, res) {
   MongoClient.connect(mongoURL, function (err, db) {
     const statlist = db.collection("statistics");
     statlist.find({ username: { $eq: req.params.dynamic } }).toArray(function (err, docs) {
+      console.log(docs)
     res.render("statistics", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
     })
   })

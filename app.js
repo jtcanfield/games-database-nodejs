@@ -133,10 +133,12 @@ app.get("/mysteryword", requiresLogin, function (req, res) {
 
 
 app.get("/statistics", function (req, res) {
-  statsFile.pullStats(function(x){
-    // res.json({stats: x});
-    res.render("statistics", {stats:x, username:req.sessionStore.authedUser});
-  });
+  MongoClient.connect(mongoURL, function (err, db) {
+  const statlist = db.collection("statistics");
+  statlist.find().toArray(function (err, docs) {
+    res.render("statistics", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
+  })
+  })
 });
 //END GETS
 

@@ -53,17 +53,18 @@ var checkExistingUsers = function(request, callback){
     callback(true, "Username must have at least 4 characters");
     return
   }
-  userDataFile.users.map((x) =>{
-    if (x.username.toLowerCase() === request.body.username.toLowerCase()){
-      callback(true, "Username already exists, choose another user name");
-      return valid = false
-    }
-    if (x.email.toLowerCase() === request.body.email.toLowerCase() && request.body.email !== ""){
-      callback(true, "Email already exists. Lost your Username or Password? Email me!");
-      return valid = false
-    }
-  });
-  if (valid === false){return}else if(valid === true){callback()};
+  // userDataFile.users.map((x) =>{
+  //   if (x.username.toLowerCase() === request.body.username.toLowerCase()){
+  //     callback(true, "Username already exists, choose another user name");
+  //     return valid = false
+  //   }
+  //   if (x.email.toLowerCase() === request.body.email.toLowerCase() && request.body.email !== ""){
+  //     callback(true, "Email already exists. Lost your Username or Password? Email me!");
+  //     return valid = false
+  //   }
+  // });
+  // if (valid === false){return}else if(valid === true){callback()};
+  callback()
 }
 
 var addUser = function(newusername, newpassword, newemail, callback){

@@ -65,15 +65,17 @@ app.get("/login", function (req, res) {
 });
 passport.use(new LocalStrategy(
     function(username, password, done) {
-      userFile.checkLogin(username, password, function(err, userobj, msg){
-        console.log("STRATEGY LAUNCHED");
-        console.log(userobj)
-        if (err){
-            return done(err)
-        } else {
-            return done(null, userobj, {message: msg})
-        }
-      });
+      MongoClient.connect(mongoURL, function (err, db) {
+        const users = db.collection("users");
+        users.find({username:{$eq: username.toLowerCase()}, password:{$eq: password}, }).toArray(function (err, docs) {
+          if (docs[0] !== undefined){
+            return done(null, docs[0])
+          }
+          if (docs[0] === undefined){
+            return done("INVALID", false)
+          }
+        })
+      })
     }
 ));
 passport.serializeUser(function(user, done) {
@@ -113,8 +115,8 @@ const requiresLogin = function (req, res, next) {
 
 //BEGIN GETS
 app.get("/", function (req, res) {
-  console.log("REQ.USER FOR THE GET SLASH")
-  console.log(req.user);
+  // console.log("REQ.USER FOR THE GET SLASH")
+  // console.log(req.user);
   if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}
   res.render("index", {username : req.sessionStore.authedUser});
 });
@@ -152,8 +154,7 @@ app.get("/statistics", function (req, res) {
 // }))
 app.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
-    console.log(user)
-    if (err) {  return res.redirect('/') }
+    if (err) {  return res.render("login", {status:err}) }
     if (!user) { return res.redirect('/login');  }
     req.sessionStore.authedUser = user.username
     MongoClient.connect(mongoURL, function (err, db) {
@@ -255,11 +256,23 @@ app.post("/signup", function (req, res) {
       res.render('signup', {status:errordescrip});
       return
     } else if (error !== true){
-      userFile.addUser(req.body.username, req.body.password2, req.body.email, function(){
-        statsFile.addstatuser(req.body.username);
-        req.sessionStore.authedUser = req.body.username;
-        res.redirect('/');
-        return
+      MongoClient.connect(mongoURL, function (err, db) {
+        const users = db.collection("users");
+        users.find({username:{$eq: req.body.username.toLowerCase()}}).toArray(function (err, docs) {
+          if (docs[0] !== undefined){
+            res.render('signup', {status:"Username already exists, choose another user name"});
+            return
+          }
+          if (docs[0] === undefined){
+            MongoClient.connect(mongoURL, function (err, db) {
+              const users = db.collection("users");
+              const statlist = db.collection("statistics");
+              users.insertOne({username: req.body.username, password: req.body.password2, email: req.body.email, sessionID: ""}, function (err, docs) {})
+              statlist.insertOne({username:req.body.username,games:"0",wins:"0",losses:"0",words:[],wordlengths:[],avgwordlength:"0",times:[],avgtime:"0",gamestatus:[]}, function (err, docs) {})
+              return res.redirect('/');
+            })
+          }
+        })
       })
     }
   });

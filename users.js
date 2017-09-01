@@ -86,18 +86,14 @@ var addSession = function(username, id, callback){
         console.log(err);
     } else {
       obj = JSON.parse(data);
-      userDataFile.users.map((x) =>{
+      userDataFile.users.map((x, index) =>{
         if (x.username.toLowerCase() === username.toLowerCase()){
-          x.sessionID = id;
-          console.log(x);
-          console.log(x.sessionID);
-          console.log(obj);
+          obj.users[index].sessionID = id;
           return
         }
       });
-      console.log(obj);
-      // json = JSON.stringify(obj);
-      // fs.writeFile('data.json', json, 'utf8');
+      json = JSON.stringify(obj);
+      fs.writeFile('data.json', json, 'utf8');
     }
   });
   callback();

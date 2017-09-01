@@ -8,12 +8,17 @@ const fs = require('fs'),
     flash = require('express-flash-messages'),//FLASH MESSAGES ALLOWS YOU TO USE res.locals.getMessages(), AND STORE THEM IN messages
     LocalStrategy = require('passport-local').Strategy,
     expressValidator = require('express-validator');
-// const mongodb = require('mongodb');
-// const MongoClient = mongodb.MongoClient;
-// const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';
-// const mongoose = require('mongoose');
-// mongoose.Promise = require('bluebird');
-// mongoose.connect('mongodb://localhost:27017/gamesdatabasenodejs');
+
+
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
+const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';
+const mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
+mongoose.connect('mongodb://localhost:27017/gamesdatabasenodejs');
+
+
+
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const app = express();
@@ -46,7 +51,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(function (req, res, next) {
-  res.locals.id = req.sessionID;
   res.locals.user = req.user;
   next();
 })
@@ -80,6 +84,7 @@ passport.deserializeUser(function(userobj, done) {
     });
 });
 const requiresLogin = function (req, res, next) {
+  console.log("REQ,USER BELOW:")
   console.log(req.user);
   if (req.user) {
     next();
@@ -106,6 +111,8 @@ const requiresLogin = function (req, res, next) {
 
 //BEGIN GETS
 app.get("/", function (req, res) {
+  console.log("REQ.USER FOR THE GET SLASH")
+  console.log(req.user);
   if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}
   res.render("index", {username : req.sessionStore.authedUser});
 });
@@ -134,20 +141,20 @@ app.get("/statistics", function (req, res) {
 //END GETS
 
 //BEGIN POSTS
-// app.post('/login', passport.authenticate('local', {
-//     successRedirect: '/',
-//     failureRedirect: '/login',
-//     failureFlash: true
-// }))
-app.post('/login', function(req, res, next) {
-  passport.authenticate('local', function(err, user, info) {
-    if (err) { return next(err); }
-    if (!user) { return res.redirect('/login'); }
-    userFile.addSession(req.body.username, req.sessionID, function(){
-      return res.redirect('/statistics');
-    });
-  })(req, res, next);
-});
+app.post('/login', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: true
+}))
+// app.post('/login', function(req, res, next) {
+//   passport.authenticate('local', function(err, user, info) {
+//     if (err) { return next(err); }
+//     if (!user) { return res.redirect('/login'); }
+//     userFile.addSession(req.body.username, req.sessionID, function(){
+//       return res.redirect('/statistics');
+//     });
+//   })(req, res, next);
+// });
 
 
 
@@ -282,10 +289,10 @@ process.env.PORT || 5000
 app.listen(process.env.PORT || 5000, function () {
   console.log('Hosted on local:5000 or Dynamic');
 })
-// MongoClient.connect(mongoURL, function(err, db) {
-//   console.log("Connected successfully to server at " + mongoURL);
-//   // db.close();
-// });
+MongoClient.connect(mongoURL, function(err, db) {
+  console.log("Connected successfully to server at " + mongoURL);
+  db.close();
+});
 
 // const con = mysql.createConnection({
 //   host: "localhost",

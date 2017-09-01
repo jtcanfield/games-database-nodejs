@@ -49,18 +49,21 @@ function isLetter(c) {
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+passport.deserializeUser(function(userobj, done) {
+  userFile.getUserCallback(userobj.username, function(err, user){
+      done(err, user);
+    });
+});
 app.use(function (req, res, next) {
-  MongoClient.connect(mongoURL, function (err, db) {
-    const users = db.collection("users");
-    users.find({sessionID:{$eq: req.sessionID}}).toArray(function (err, docs) {
-      console.log("THIS IS THE CHECK:")
-      console.log(docs[0])
-    })
-  })
+  console.log("unnamed function");
+  res.locals.user = req.user;
+  console.log(res.locals);
   next();
 })
 app.get("/login", function (req, res) {
-  req.sessionStore.authedUser = undefined;
   res.render("login", {messages: res.locals.getMessages()});
 });
 passport.use(new LocalStrategy(
@@ -78,26 +81,11 @@ passport.use(new LocalStrategy(
       })
     }
 ));
-passport.serializeUser(function(user, done) {
-  console.log("SERIALIZEUSER RAN:");
-  console.log(user);
-    done(null, user);
-});
-
-passport.deserializeUser(function(userobj, done) {
-  userFile.getUserCallback(userobj.username, function(err, user){
-      console.log("DEEEESERIALIZEUSER RAN:");
-      console.log(user);
-      done(err, user);
-    });
-});
 const requiresLogin = function (req, res, next) {
-  console.log("REQ,USER BELOW:")
-  console.log(req.user);
   if (req.user) {
-    next();
+    next()
   } else {
-    res.redirect('/login');
+    res.redirect('/login/');
   }
 }
 
@@ -114,10 +102,7 @@ const requiresLogin = function (req, res, next) {
 
 
 //BEGIN GETS
-app.get("/", function (req, res) {
-  // console.log("REQ.USER FOR THE GET SLASH")
-  // console.log(req.user);
-  if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}
+app.get("/", requiresLogin, function (req, res) {
   res.render("index", {username : req.sessionStore.authedUser});
 });
 
@@ -160,6 +145,7 @@ app.post('/login', function(req, res, next) {
     MongoClient.connect(mongoURL, function (err, db) {
       const users = db.collection("users");
       users.updateOne({username:{$eq: user.username}}, {$set: {sessionID:req.sessionID}}, function (err, docs) {
+      req.logIn(user, function() {});//NEEDS TO BE USED IN ORDER TO USE REQ.USER
       return res.redirect('/');
       })
     })
@@ -171,13 +157,9 @@ app.post('/login', function(req, res, next) {
 app.post("/", function (req, res) {
   res.redirect('/');
 });
-app.post("/mysteryword", function (req, res) {
-  res.redirect('/');
-});
 
 
-app.post("/startgame:dynamic", function (req, res) {
-  if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}
+app.post("/startgame:dynamic", requiresLogin, function (req, res) {
   mysterywordgameFile.getword(req.params.dynamic, function(word){
     req.sessionStore.word = [...word];
     var emptyArray = [];
@@ -192,8 +174,7 @@ app.post("/startgame:dynamic", function (req, res) {
   });
 });
 
-app.post("/submitletter", function (req, res) {
-  if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}
+app.post("/submitletter", requiresLogin, function (req, res) {
   if (req.sessionStore.emptyWord === undefined){res.render("index", {username : req.sessionStore.authedUser});return}
   if (req.sessionStore.emptyWord !== undefined){
     var lettersubmitted = req.body.lettersubmitted.toLowerCase();
@@ -283,11 +264,9 @@ app.post("/logout", function (req, res) {
   res.redirect('back');
 });
 app.post("/loginredirect", function (req, res) {
-  req.sessionStore.authedUser = undefined;
   res.redirect('/login');
 });
 app.post("/signupredirect", function (req, res) {
-  req.sessionStore.authedUser = undefined;
   res.redirect('/signup');
 });
 app.post("/statisticsredirect", function (req, res) {

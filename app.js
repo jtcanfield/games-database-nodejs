@@ -200,7 +200,7 @@ app.get("/profile:dynamic", function (req, res) {
   });
 });
 app.get("/search:dynamic", function (req, res) {
-  statsFile.pullStats(function(x){
+  statsFile.pullStatsAPI(function(x){
     res.json({stats: x});
     // res.render("statistics", {stats:x, username:req.sessionStore.authedUser});
   });

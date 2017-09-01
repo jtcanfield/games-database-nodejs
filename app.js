@@ -11,7 +11,8 @@ const fs = require('fs'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
     passport = require('passport'),
-    // LocalStrategy = require('passport-local').Strategy,
+    flash = require('express-flash-messages'),
+    LocalStrategy = require('passport-local').Strategy,
     expressValidator = require('express-validator');
 // const mongodb = require('mongodb');
 // const MongoClient = mongodb.MongoClient;
@@ -40,6 +41,73 @@ var gameWin = false;
 function isLetter(c) {
   return c.toLowerCase() != c.toUpperCase();
 };
+
+
+
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+app.get("/loginpassport", function (req, res) {
+  req.sessionStore.authedUser = undefined;
+  res.render("login");
+});
+app.post('/loginpassport/', passport.authenticate('local', {
+    successRedirect: '/statistics',
+    failureRedirect: '/loginpassport',
+    failureFlash: true
+}))
+const userDataFile = require('./data.json');
+function getUser(uzer){
+  return userDataFile.users.find(function (user) {
+    return user.username.toLowerCase() == uzer.toLowerCase();
+  });
+}
+function getUserCallback(uzer, callback){
+  var thingimsending = userDataFile.users.find(function (user) {
+    return user.username.toLowerCase() == uzer.toLowerCase();
+  });
+  callback(null, thingimsending);
+}
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+      fs.readFile('data.json', 'utf8', function(err, data){
+        if (err){
+            return done(err)
+        } else {
+        obj = JSON.parse(data);
+        var userCheck = getUser(username);
+          if (userCheck !== undefined && password === userCheck.password){
+            return done(null, username);
+          } else {
+            return done(null, false, {message: "There is no user with that username and password."})
+          }
+        }
+      });
+    }
+));
+passport.serializeUser(function(user, done) {
+  console.log("SERIALIZEUSER RAN:");
+  console.log(user);
+    done(null, user);
+});
+
+passport.deserializeUser(function(id, done) {
+  console.log("DEEEESERIALIZEUSER RAN:");
+  console.log(id);
+    getUserCallback(id, function(err, user) {
+      console.log(user);
+        done(err, user);
+    });
+});
+
+
+
+
+
+
+
 
 //BEGIN GETS
 app.get("/", function (req, res) {

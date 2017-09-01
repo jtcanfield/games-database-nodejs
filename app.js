@@ -1,9 +1,3 @@
-// const fs = require('fs');
-// const path = require('path');
-// const express = require('express');
-// const mustache = require('mustache-express');
-// const bodyParser = require('body-parser');
-// const session = require('express-session');
 const fs = require('fs'),
     path = require('path'),
     express = require('express'),
@@ -11,7 +5,7 @@ const fs = require('fs'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
     passport = require('passport'),
-    flash = require('express-flash-messages'),
+    flash = require('express-flash-messages'),//FLASH MESSAGES ALLOWS YOU TO USE res.locals.getMessages(), AND STORE THEM IN messages
     LocalStrategy = require('passport-local').Strategy,
     expressValidator = require('express-validator');
 // const mongodb = require('mongodb');
@@ -46,12 +40,19 @@ function isLetter(c) {
 
 
 
+
+
+
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.get("/loginpassport", function (req, res) {
   req.sessionStore.authedUser = undefined;
-  res.render("login");
+  // res.render("login");
+  res.render("login", {
+        messages: res.locals.getMessages()
+    });
 });
 app.post('/loginpassport/', passport.authenticate('local', {
     successRedirect: '/statistics',
@@ -63,12 +64,6 @@ function getUser(uzer){
   return userDataFile.users.find(function (user) {
     return user.username.toLowerCase() == uzer.toLowerCase();
   });
-}
-function getUserCallback(uzer, callback){
-  var thingimsending = userDataFile.users.find(function (user) {
-    return user.username.toLowerCase() == uzer.toLowerCase();
-  });
-  callback(null, thingimsending);
 }
 passport.use(new LocalStrategy(
     function(username, password, done) {
@@ -94,13 +89,22 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-  console.log("DEEEESERIALIZEUSER RAN:");
-  console.log(id);
-    getUserCallback(id, function(err, user) {
+  // console.log(id);
+  userFile.getUserCallback(id, function(err, user){
+      console.log("DEEEESERIALIZEUSER RAN:");
       console.log(user);
         done(err, user);
     });
 });
+
+
+
+
+
+
+
+
+
 
 
 

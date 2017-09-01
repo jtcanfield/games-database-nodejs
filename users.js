@@ -8,6 +8,12 @@ function getUser(username){
     return user.username.toLowerCase() == username.toLowerCase();
   });
 }
+function getUserCallback(uzer, callback){
+  var userobj = userDataFile.users.find(function (user) {
+    return user.username.toLowerCase() == uzer.toLowerCase();
+  });
+  callback(null, userobj);
+}
 
 var checkLogin = function (usrname, pass, callback){
   fs.readFile('data.json', 'utf8', function(err, data){
@@ -74,6 +80,7 @@ var addUser = function(newusername, newpassword, newemail, callback){
 
 module.exports = {
   userObjectPull:getUser,
+  getUserCallback:getUserCallback,
   checkLogin:checkLogin,
   checkExistingUsers:checkExistingUsers,
   addUser:addUser

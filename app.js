@@ -106,8 +106,8 @@ const requiresLogin = function (req, res, next) {
 
 //BEGIN GETS
 app.get("/", requiresLogin, function (req, res) {
-  console.log(req.user.username)
-  res.render("index", {username : req.sessionStore.authedUser});
+  console.log(req.user[0].username)
+  res.render("index");
 });
 
 app.get("/login", function (req, res) {
@@ -178,7 +178,7 @@ app.post("/startgame:dynamic", requiresLogin, function (req, res) {
 });
 
 app.post("/submitletter", requiresLogin, function (req, res) {
-  if (req.sessionStore.emptyWord === undefined){res.render("index", {username : req.user.username});return}
+  if (req.sessionStore.emptyWord === undefined){res.render("index", {username : req.user[0].username});return}
   if (req.sessionStore.emptyWord !== undefined){
     var lettersubmitted = req.body.lettersubmitted.toLowerCase();
     if (isLetter(lettersubmitted) === false){//Input is not a letter
@@ -198,7 +198,17 @@ app.post("/submitletter", requiresLogin, function (req, res) {
             req.sessionStore.emptyWord[index] = "wrong"+req.sessionStore.word[index];
           }
         });
-        statsFile.changestats(req.user.username, 0, 1, req.sessionStore.word, req.sessionStore.word.length, req.body.timer, "Loss");
+        MongoClient.connect(mongoURL, function (err, db) {
+          const stats = db.collection("statistics");
+          stats.updateOne({username:{$eq: req.user[0].username}},
+            { $set:
+              {
+                $inc: { games: 1, losses: 1 },
+                $push: { words: req.sessionStore.word, wordlength: req.sessionStore.word.length, times: req.body.timer, gamestatus:"Loss"}
+              }
+            })
+        })
+        // statsFile.changestats(req.user.username, 0, 1, req.sessionStore.word, req.sessionStore.word.length, req.body.timer, "Loss");
         res.render("mysteryword", {gamefinal:true,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: "Out of lives!", time:req.body.timer, letterstatus:"Wrong!"});
         req.sessionStore.emptyWord = undefined;
         return

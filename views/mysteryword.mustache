@@ -16,7 +16,7 @@
  	<body>
     <div id="topbarwrapper">
       <form action="/statisticsredirect" method="post"><button type="submit">Statistics</button></form>
-      <p>Welcome, {{user.username}}</p>
+      <p>Welcome, {{#user}}{{username}}{{/user}}</p>
       <form action="/" method="post"><button type="submit">Play!</button></form>
       <form action="/logout" method="post"><button type="submit">Logout</button></form>
     </div>

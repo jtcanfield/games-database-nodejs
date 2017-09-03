@@ -260,7 +260,7 @@ app.post("/signup", function (req, res) {
               const users = db.collection("users");
               const statlist = db.collection("statistics");
               users.insertOne({username: req.body.username, password: req.body.password2, email: req.body.email, sessionID: ""}, function (err, docs) {})
-              statlist.insertOne({username:req.body.username,games:"0",wins:"0",losses:"0",words:[],wordlengths:[],times:[],gamestatus:[]}, function (err, docs) {})
+              statlist.insertOne({username:req.body.username,games:0,wins:0,losses:0,words:[],wordlengths:[],times:[],gamestatus:[]}, function (err, docs) {})
               return res.redirect('/');
             })
           }

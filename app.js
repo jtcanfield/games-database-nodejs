@@ -75,9 +75,18 @@ passport.use(new LocalStrategy(
 ));
 const requiresLogin = function (req, res, next) {
   if (req.user) {
-    next()
+    next();
   } else {
     res.redirect('/login/');
+    return
+  }
+}
+const loginRedirect = function (req, res, next) {
+  if (req.user) {
+    res.redirect('/');
+    return
+  } else {
+    next();
   }
 }
 
@@ -101,13 +110,11 @@ app.get("/", requiresLogin, function (req, res) {
   res.render("index");
 });
 
-app.get("/login", function (req, res) {
-  req.sessionStore.authedUser = undefined;
+app.get("/login", loginRedirect, function (req, res) {
   res.render("login");
 });
 
-app.get("/signup", function (req, res) {
-  req.sessionStore.authedUser = undefined;
+app.get("/signup", loginRedirect, function (req, res) {
   res.render("signup");
 });
 app.get("/mysteryword", requiresLogin, function (req, res) {
@@ -276,7 +283,7 @@ app.get("/profile:dynamic", function (req, res) {
     const statlist = db.collection("statistics");
     statlist.find({ username: { $eq: req.params.dynamic } }).toArray(function (err, docs) {
       console.log(docs)
-    res.render("profile", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
+    res.render("profile", {stats:JSON.stringify(docs)});
     })
   })
 });

@@ -48,7 +48,8 @@ if (fullstats !== null){
     let holder = `
       <h2><a href="/profile${user.username}">${user.username}</a></h2>
       <p>Games: ${user.games}  Wins: ${user.wins} Losses: ${user.losses}</p>
-      <p>Avg Word Length: ${user.avgwordlength}</p>
+      <p>Avg Word Length: ${(user.wordlengths.reduce((a,b) => a+b, 0))/user.wordlengths.length}</p>
+      <p>Avg Time: ${(user.times.reduce((a,b) => a+b, 0))/user.times.length}</p>
     `;
     newliteral.innerHTML = holder;
     fullstats.appendChild(newliteral);
@@ -56,22 +57,22 @@ if (fullstats !== null){
 }
 //Profile Page
 var profilepage = document.getElementById("profilepageinfo");
-console.log(profilepage);
 if (profilepage !== null){
   var jsonObjectarray = JSON.parse(profilepage.textContent);
   var jsonObject = jsonObjectarray[0];
   profilepage.innerHTML = "";
   var newliteral = document.createElement("div");
+  console.log(jsonObject);
   newliteral.setAttribute("class", "playerstats");
   let holder = `
     <h1>${jsonObject.username}</h1>
     <div>
       <span>Games: ${jsonObject.games}</span><span>Wins: ${jsonObject.wins}</span><span>Losses: ${jsonObject.losses}</span>
     </div>
-    <p>Avg Word Length: ${jsonObject.avgwordlength}</p>
+    <p>Avg Word Length: ${(jsonObject.wordlengths.reduce((a,b) => a+b, 0))/jsonObject.wordlengths.length}</p>
+    <p>Avg Time: ${(jsonObject.times.reduce((a,b) => a+b, 0))/jsonObject.times.length}</p>
     <h3>Game History:</h3>
   `;
-  console.log(jsonObject.words);
   newliteral.innerHTML = holder;
   for (let i = 0; i < jsonObject.words.length; i++){
     let historyholder = `

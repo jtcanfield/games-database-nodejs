@@ -93,14 +93,17 @@ const requiresLogin = function (req, res, next) {
 }
 
 
+MongoClient.connect(mongoURL, function (err, db) {
+  const statlist = db.collection("statistics");
+  statlist.updateOne({username:{$eq: "jtdude100"}},{username:"jtdude100",games:4,wins:1,losses:3,words:[ "wynd", "basion", "pelf", "reguli" ],wordlengths:[ 4, 6, 4, 6 ],times:[ 11000, 18000, 8000, 22000 ],gamestatus:[ "Loss", "Loss", "Loss", "Win" ]}, function (err, docs) {})
+  statlist.updateOne({username:{$eq: "newdudeontheblock"}},{username:"newdudeontheblock",games:4,wins:2,losses:2,words:[ "guglio", "stull", "tappet", "holier" ],wordlengths:[ 6, 5, 7, 7 ],times:[ 45000, 43000, 4440, 3510 ],gamestatus:[ "Win", "Win", "Loss", "Loss" ]}, function (err, docs) {})
+  statlist.updateOne({username:{$eq: "noemailguy"}},{username:"noemailguy",games:0,wins:0,losses:0,words:[],wordlengths:[],times:[],gamestatus:[]}, function (err, docs) {})
+console.log("RESET STATS")
+})
 
-
-
-
-
-
-
-
+// { "_id" : ObjectId("59a9a88fc971d72370e2830c"), "username" : "jtdude100", "games" : 4, "wins" : 1, "losses" : 3, "words" : [ "wynd", "basion", "pelf", "reguli" ], "wordlengths" : [ 4, 6, 4, 6 ], "avgwordlength" : 5, "times" : [ 11000, 18000, 8000, 22000 ], "avgtime" : 14750, "gamestatus" : [ "Loss", "Loss", "Loss", "Win" ] }
+// { "_id" : ObjectId("59a9a88fc971d72370e2830d"), "username" : "newdudeontheblock", "games" : 4, "wins" : 2, "losses" : 2, "words" : [ "guglio", "stull", "tappet\r", "holier\r" ], "wordlengths" : [ 6, 5, 7, 7 ], "avgwordlength" : 6.25, "times" : [ 45000, 43000, "4440", "3510" ], "avgtime" : 2200011100877.5, "gamestatus" : [ "Win", "Win", "Loss", "Loss" ] }
+// { "_id" : ObjectId("59a9a88fc971d72370e2830e"), "username" : "noemailguy", "games" : "0", "wins" : "0", "losses" : "0", "words" : [ ], "wordlengths" : [ ], "avgwordlength" : "0", "times" : [ ], "avgtime" : "0", "gamestatus" : [ ] }
 
 
 
@@ -120,7 +123,6 @@ app.get("/signup", function (req, res) {
   res.render("signup");
 });
 app.get("/mysteryword", requiresLogin, function (req, res) {
-  if (req.sessionStore.authedUser === undefined){res.redirect('/login');return}
   res.redirect('/');
 });
 
@@ -178,6 +180,7 @@ app.post("/startgame:dynamic", requiresLogin, function (req, res) {
 });
 
 app.post("/submitletter", requiresLogin, function (req, res) {
+  console.log(req.sessionStore.word);
   if (req.sessionStore.emptyWord === undefined){res.render("index", {username : req.user[0].username});return}
   if (req.sessionStore.emptyWord !== undefined){
     var lettersubmitted = req.body.lettersubmitted.toLowerCase();
@@ -200,26 +203,8 @@ app.post("/submitletter", requiresLogin, function (req, res) {
         });
         MongoClient.connect(mongoURL, function (err, db) {
           const stats = db.collection("statistics");
-          stats.updateOne({username:{$eq: user.username}}, {$inc: { games: 1, losses: 1 }})
-          stats.updateOne({username:{$eq: user.username}}, {$inc: { games: 1, losses: 1 }})
-
-
-
-
-
-
-
-
-
-
-
-          stats.updateOne({username:{$eq: req.user[0].username}},
-            { $set:
-              {
-                $inc: { games: 1, losses: 1 },
-                $push: { words: req.sessionStore.word, wordlength: req.sessionStore.word.length, times: req.body.timer, gamestatus:"Loss"}
-              }
-            })
+          stats.updateOne({username:{$eq: req.user[0].username}}, {$inc: { games: 1, losses: 1 }})
+          stats.updateOne({username:{$eq: req.user[0].username}}, {$push: { words: (req.sessionStore.word.join("")), wordlengths: Number(req.sessionStore.word.length), times:  Number(req.body.timer), gamestatus:"Loss"}})
         })
         // statsFile.changestats(req.user.username, 0, 1, req.sessionStore.word, req.sessionStore.word.length, req.body.timer, "Loss");
         res.render("mysteryword", {gamefinal:true,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: "Out of lives!", time:req.body.timer, letterstatus:"Wrong!"});
@@ -275,7 +260,7 @@ app.post("/signup", function (req, res) {
               const users = db.collection("users");
               const statlist = db.collection("statistics");
               users.insertOne({username: req.body.username, password: req.body.password2, email: req.body.email, sessionID: ""}, function (err, docs) {})
-              statlist.insertOne({username:req.body.username,games:"0",wins:"0",losses:"0",words:[],wordlengths:[],avgwordlength:"0",times:[],avgtime:"0",gamestatus:[]}, function (err, docs) {})
+              statlist.insertOne({username:req.body.username,games:"0",wins:"0",losses:"0",words:[],wordlengths:[],times:[],gamestatus:[]}, function (err, docs) {})
               return res.redirect('/');
             })
           }

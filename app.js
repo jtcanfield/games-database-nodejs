@@ -200,6 +200,19 @@ app.post("/submitletter", requiresLogin, function (req, res) {
         });
         MongoClient.connect(mongoURL, function (err, db) {
           const stats = db.collection("statistics");
+          stats.updateOne({username:{$eq: user.username}}, {$inc: { games: 1, losses: 1 }})
+          stats.updateOne({username:{$eq: user.username}}, {$inc: { games: 1, losses: 1 }})
+
+
+
+
+
+
+
+
+
+
+
           stats.updateOne({username:{$eq: req.user[0].username}},
             { $set:
               {
@@ -289,7 +302,7 @@ app.get("/profile:dynamic", function (req, res) {
     const statlist = db.collection("statistics");
     statlist.find({ username: { $eq: req.params.dynamic } }).toArray(function (err, docs) {
       console.log(docs)
-    res.render("statistics", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
+    res.render("profile", {stats:JSON.stringify(docs), username:req.sessionStore.authedUser});
     })
   })
 });

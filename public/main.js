@@ -56,8 +56,10 @@ if (fullstats !== null){
 }
 //Profile Page
 var profilepage = document.getElementById("profilepageinfo");
+console.log(profilepage);
 if (profilepage !== null){
-  var jsonObject = JSON.parse(profilepage.textContent);
+  var jsonObjectarray = JSON.parse(profilepage.textContent);
+  var jsonObject = jsonObjectarray[0];
   profilepage.innerHTML = "";
   var newliteral = document.createElement("div");
   newliteral.setAttribute("class", "playerstats");
@@ -69,6 +71,7 @@ if (profilepage !== null){
     <p>Avg Word Length: ${jsonObject.avgwordlength}</p>
     <h3>Game History:</h3>
   `;
+  console.log(jsonObject.words);
   newliteral.innerHTML = holder;
   for (let i = 0; i < jsonObject.words.length; i++){
     let historyholder = `

@@ -62,7 +62,6 @@ if (profilepage !== null){
   var jsonObject = jsonObjectarray[0];
   profilepage.innerHTML = "";
   var newliteral = document.createElement("div");
-  console.log(jsonObject);
   newliteral.setAttribute("class", "playerstats");
   let holder = `
     <h1>${jsonObject.username}</h1>

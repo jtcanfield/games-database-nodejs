@@ -93,14 +93,13 @@ const requiresLogin = function (req, res, next) {
 }
 
 
-MongoClient.connect(mongoURL, function (err, db) {
-  const statlist = db.collection("statistics");
-  statlist.updateOne({username:{$eq: "jtdude100"}},{username:"jtdude100",games:4,wins:1,losses:3,words:[ "wynd", "basion", "pelf", "reguli" ],wordlengths:[ 4, 6, 4, 6 ],times:[ 11000, 18000, 8000, 22000 ],gamestatus:[ "Loss", "Loss", "Loss", "Win" ]}, function (err, docs) {})
-  statlist.updateOne({username:{$eq: "newdudeontheblock"}},{username:"newdudeontheblock",games:4,wins:2,losses:2,words:[ "guglio", "stull", "tappet", "holier" ],wordlengths:[ 6, 5, 7, 7 ],times:[ 45000, 43000, 4440, 3510 ],gamestatus:[ "Win", "Win", "Loss", "Loss" ]}, function (err, docs) {})
-  statlist.updateOne({username:{$eq: "noemailguy"}},{username:"noemailguy",games:0,wins:0,losses:0,words:[],wordlengths:[],times:[],gamestatus:[]}, function (err, docs) {})
-console.log("RESET STATS")
-})
-
+// MongoClient.connect(mongoURL, function (err, db) {
+//   const statlist = db.collection("statistics");
+//   statlist.updateOne({username:{$eq: "jtdude100"}},{username:"jtdude100",games:4,wins:1,losses:3,words:[ "wynd", "basion", "pelf", "reguli" ],wordlengths:[ 4, 6, 4, 6 ],times:[ 11000, 18000, 8000, 22000 ],gamestatus:[ "Loss", "Loss", "Loss", "Win" ]}, function (err, docs) {})
+//   statlist.updateOne({username:{$eq: "newdudeontheblock"}},{username:"newdudeontheblock",games:4,wins:2,losses:2,words:[ "guglio", "stull", "tappet", "holier" ],wordlengths:[ 6, 5, 7, 7 ],times:[ 45000, 43000, 4440, 3510 ],gamestatus:[ "Win", "Win", "Loss", "Loss" ]}, function (err, docs) {})
+//   statlist.updateOne({username:{$eq: "noemailguy"}},{username:"noemailguy",games:0,wins:0,losses:0,words:[],wordlengths:[],times:[],gamestatus:[]}, function (err, docs) {})
+// console.log("RESET STATS")
+// })
 // { "_id" : ObjectId("59a9a88fc971d72370e2830c"), "username" : "jtdude100", "games" : 4, "wins" : 1, "losses" : 3, "words" : [ "wynd", "basion", "pelf", "reguli" ], "wordlengths" : [ 4, 6, 4, 6 ], "avgwordlength" : 5, "times" : [ 11000, 18000, 8000, 22000 ], "avgtime" : 14750, "gamestatus" : [ "Loss", "Loss", "Loss", "Win" ] }
 // { "_id" : ObjectId("59a9a88fc971d72370e2830d"), "username" : "newdudeontheblock", "games" : 4, "wins" : 2, "losses" : 2, "words" : [ "guglio", "stull", "tappet\r", "holier\r" ], "wordlengths" : [ 6, 5, 7, 7 ], "avgwordlength" : 6.25, "times" : [ 45000, 43000, "4440", "3510" ], "avgtime" : 2200011100877.5, "gamestatus" : [ "Win", "Win", "Loss", "Loss" ] }
 // { "_id" : ObjectId("59a9a88fc971d72370e2830e"), "username" : "noemailguy", "games" : "0", "wins" : "0", "losses" : "0", "words" : [ ], "wordlengths" : [ ], "avgwordlength" : "0", "times" : [ ], "avgtime" : "0", "gamestatus" : [ ] }
@@ -206,7 +205,6 @@ app.post("/submitletter", requiresLogin, function (req, res) {
           stats.updateOne({username:{$eq: req.user[0].username}}, {$inc: { games: 1, losses: 1 }})
           stats.updateOne({username:{$eq: req.user[0].username}}, {$push: { words: (req.sessionStore.word.join("")), wordlengths: Number(req.sessionStore.word.length), times:  Number(req.body.timer), gamestatus:"Loss"}})
         })
-        // statsFile.changestats(req.user.username, 0, 1, req.sessionStore.word, req.sessionStore.word.length, req.body.timer, "Loss");
         res.render("mysteryword", {gamefinal:true,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: "Out of lives!", time:req.body.timer, letterstatus:"Wrong!"});
         req.sessionStore.emptyWord = undefined;
         return
@@ -228,16 +226,18 @@ app.post("/submitletter", requiresLogin, function (req, res) {
         }
       });
       if (gameWin === true){//GAME WIN
-        statsFile.changestats(req.user.username, 1, 0, req.sessionStore.word, req.sessionStore.word.length, req.body.timer, "Win");
+        MongoClient.connect(mongoURL, function (err, db) {
+          const stats = db.collection("statistics");
+          stats.updateOne({username:{$eq: req.user[0].username}}, {$inc: { games: 1, wins: 1 }})
+          stats.updateOne({username:{$eq: req.user[0].username}}, {$push: { words: (req.sessionStore.word.join("")), wordlengths: Number(req.sessionStore.word.length), times:  Number(req.body.timer), gamestatus:"Win"}})
+        })
         res.render("mysteryword", {gamefinal:true,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: req.sessionStore.lives, time:req.body.timer, letterstatus:"Good Game!"});
         req.sessionStore.emptyWord = undefined;
         return
       } else {
         res.render("mysteryword", {game:true,emptyWord:req.sessionStore.emptyWord, guessed:req.sessionStore.guessed, lives: req.sessionStore.lives, time:req.body.timer, letterstatus:"Nice!"});
+        return
       }
-    } else {
-      console.log("GAME BROKE!");
-      console.log(req.sessionStore);
     }
   }
 });
@@ -292,9 +292,12 @@ app.get("/profile:dynamic", function (req, res) {
   })
 });
 app.get("/search:dynamic", function (req, res) {
-  statsFile.pullStatsAPI(function(x){
-    res.json({stats: x});
-  });
+  MongoClient.connect(mongoURL, function (err, db) {
+    const statlist = db.collection("statistics");
+    statlist.find().toArray(function (err, docs) {
+      res.json({stats:docs})
+    })
+  })
 });
 app.get("/:dynamic", function (req, res) {
   console.log("DYNAMIC TRIGGERED:")

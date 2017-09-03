@@ -55,9 +55,6 @@ app.use(function (req, res, next) {
   console.log(res.locals);
   next();
 })
-app.get("/login", function (req, res) {
-  res.render("login", {messages: res.locals.getMessages()});
-});
 passport.use(new LocalStrategy(
     function(username, password, done) {
       MongoClient.connect(mongoURL, function (err, db) {
@@ -109,11 +106,9 @@ app.get("/", requiresLogin, function (req, res) {
   console.log(req.user[0].username)
   res.render("index");
 });
-
 app.get("/login", loginRedirect, function (req, res) {
-  res.render("login");
+  res.render("login", {messages: res.locals.getMessages()});
 });
-
 app.get("/signup", loginRedirect, function (req, res) {
   res.render("signup");
 });

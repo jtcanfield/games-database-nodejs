@@ -37,6 +37,13 @@ if (timekeeper){
 if (window.location.pathname === "/startgamehard" || window.location.pathname === "/startgamemedium" ||  window.location.pathname === "/startgameeasy" ||  window.location.pathname === "/submitletter"){
   window.history.pushState("", "", '/mysteryword');
 }
+//Function for time
+function timecalc(x){
+  var minutes = Math.floor((x % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((x % (1000 * 60)) / 1000);
+  return minutes + "m " + seconds + "s ";
+}
+
 //Statistics Page
 var fullstats = document.getElementById("fullstatistics");
 if (fullstats !== null){
@@ -45,15 +52,11 @@ if (fullstats !== null){
   jsonObject.map((user) => {
     var newliteral = document.createElement("div");
     newliteral.setAttribute("class", "playerstats");
-    var calculated = (user.times.reduce((a,b) => a+b, 0))/user.times.length;
-    var minutes = Math.floor((calculated % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((calculated % (1000 * 60)) / 1000);
-    var time = minutes + "m " + seconds + "s ";
     let holder = `
       <h2><a href="/profile${user.username}">${user.username}</a></h2>
       <p>Games: ${user.games}  Wins: ${user.wins} Losses: ${user.losses}</p>
       <p>Avg Word Length: ${(user.wordlengths.reduce((a,b) => a+b, 0))/user.wordlengths.length}</p>
-      <p>Avg Time: ${time}</p>
+      <p>Avg Time: ${timecalc((user.times.reduce((a,b) => a+b, 0))/user.times.length)}</p>
     `;
     newliteral.innerHTML = holder;
     fullstats.appendChild(newliteral);
@@ -67,24 +70,20 @@ if (profilepage !== null){
   profilepage.innerHTML = "";
   var newliteral = document.createElement("div");
   newliteral.setAttribute("class", "playerstats");
-  var calculated = ((jsonObject.times.reduce((a,b) => a+b, 0))/jsonObject.times.length;
-  var minutes = Math.floor((calculated % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((calculated % (1000 * 60)) / 1000);
-  var time = minutes + "m " + seconds + "s ";
   let holder = `
     <h1>${jsonObject.username}</h1>
     <div>
       <span>Games: ${jsonObject.games}</span><span>Wins: ${jsonObject.wins}</span><span>Losses: ${jsonObject.losses}</span>
     </div>
     <p>Avg Word Length: ${(jsonObject.wordlengths.reduce((a,b) => a+b, 0))/jsonObject.wordlengths.length}</p>
-    <p>Avg Time: ${time}</p>
+    <p>Avg Time: ${timecalc((jsonObject.times.reduce((a,b) => a+b, 0))/jsonObject.times.length)}</p>
     <h3>Game History:</h3>
   `;
   newliteral.innerHTML = holder;
   for (let i = 0; i < jsonObject.words.length; i++){
     let historyholder = `
       <div>
-        <span>${jsonObject.gamestatus[i]}</span><span>Word: ${jsonObject.words[i]}</span><span>Time Taken: ${jsonObject.times[i]}</span>
+        <span>${jsonObject.gamestatus[i]}</span><span>Word: ${jsonObject.words[i]}</span><span>Time Taken: ${timecalc(jsonObject.times[i])}</span>
       </div>
     `;
     newliteral.innerHTML += historyholder;

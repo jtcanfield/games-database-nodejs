@@ -241,19 +241,16 @@ app.post("/signup", function (req, res) {
     } else {//REMOVE DUPLICATED MONGOCLIENT.CONNECT AND CONSTS
       MongoClient.connect(mongoURL, function (err, db) {
         const users = db.collection("users");
+        const statlist = db.collection("statistics");
         users.find({username:{$eq: req.body.username.toLowerCase()}}).toArray(function (err, docs) {
           if (docs[0] !== undefined){
             res.render('signup', {status:"Username already exists, choose another user name"});
             return
           }
           if (docs[0] === undefined){
-            MongoClient.connect(mongoURL, function (err, db) {
-              const users = db.collection("users");
-              const statlist = db.collection("statistics");
-              users.insertOne({username: req.body.username, password: req.body.password2, email: req.body.email, sessionID: ""}, function (err, docs) {})
-              statlist.insertOne({username:req.body.username,games:0,wins:0,losses:0,words:[],wordlengths:[],times:[],gamestatus:[]}, function (err, docs) {})
+              users.insertOne({username: req.body.username, password: req.body.password2, email: req.body.email, sessionID: ""})
+              statlist.insertOne({username:req.body.username,games:0,wins:0,losses:0,words:[],wordlengths:[],times:[],gamestatus:[]})
               return res.redirect('/');
-            })
           }
         })
       })

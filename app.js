@@ -9,14 +9,12 @@ const fs = require('fs'),
     LocalStrategy = require('passport-local').Strategy,
     expressValidator = require('express-validator');
 
-
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 const mongoURL = 'mongodb://localhost:27017/gamesdatabasenodejs';
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 mongoose.connect('mongodb://localhost:27017/gamesdatabasenodejs');
-
 
 const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
@@ -25,8 +23,6 @@ const userFile = require('./users.js');
 const statsFile = require('./stats.js');
 const mysterywordgameFile = require('./mysterywordgame.js');
 const UserModel = require("./models/model");
-
-
 app.use(session({ secret: 'this-is-a-secret-token', cookie: { maxAge: 60000, httpOnly: false}}));
 app.engine('mustache', mustache());
 app.set('view engine', 'mustache');
@@ -39,13 +35,6 @@ var gameWin = false;
 function isLetter(c) {
   return c.toLowerCase() != c.toUpperCase();
 };
-
-
-
-
-
-
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());

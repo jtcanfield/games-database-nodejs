@@ -45,11 +45,15 @@ if (fullstats !== null){
   jsonObject.map((user) => {
     var newliteral = document.createElement("div");
     newliteral.setAttribute("class", "playerstats");
+    var calculated = (user.times.reduce((a,b) => a+b, 0))/user.times.length;
+    var minutes = Math.floor((calculated % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((calculated % (1000 * 60)) / 1000);
+    var time = minutes + "m " + seconds + "s ";
     let holder = `
       <h2><a href="/profile${user.username}">${user.username}</a></h2>
       <p>Games: ${user.games}  Wins: ${user.wins} Losses: ${user.losses}</p>
       <p>Avg Word Length: ${(user.wordlengths.reduce((a,b) => a+b, 0))/user.wordlengths.length}</p>
-      <p>Avg Time: ${(user.times.reduce((a,b) => a+b, 0))/user.times.length}</p>
+      <p>Avg Time: ${time}</p>
     `;
     newliteral.innerHTML = holder;
     fullstats.appendChild(newliteral);
@@ -63,13 +67,17 @@ if (profilepage !== null){
   profilepage.innerHTML = "";
   var newliteral = document.createElement("div");
   newliteral.setAttribute("class", "playerstats");
+  var calculated = ((jsonObject.times.reduce((a,b) => a+b, 0))/jsonObject.times.length;
+  var minutes = Math.floor((calculated % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((calculated % (1000 * 60)) / 1000);
+  var time = minutes + "m " + seconds + "s ";
   let holder = `
     <h1>${jsonObject.username}</h1>
     <div>
       <span>Games: ${jsonObject.games}</span><span>Wins: ${jsonObject.wins}</span><span>Losses: ${jsonObject.losses}</span>
     </div>
     <p>Avg Word Length: ${(jsonObject.wordlengths.reduce((a,b) => a+b, 0))/jsonObject.wordlengths.length}</p>
-    <p>Avg Time: ${(jsonObject.times.reduce((a,b) => a+b, 0))/jsonObject.times.length}</p>
+    <p>Avg Time: ${time}</p>
     <h3>Game History:</h3>
   `;
   newliteral.innerHTML = holder;

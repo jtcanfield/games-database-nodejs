@@ -265,9 +265,11 @@ app.post("/logout", function (req, res) {
   res.redirect('back');
 });
 app.post("/loginredirect", function (req, res) {
+  req.session.destroy();
   res.redirect('/login');
 });
 app.post("/signupredirect", function (req, res) {
+  req.session.destroy();
   res.redirect('/signup');
 });
 app.post("/statisticsredirect", function (req, res) {
